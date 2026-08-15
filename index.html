@@ -87,6 +87,14 @@
         const BIN_ID = "6a80df4af5f4af5e291b2807";
         const API_KEY = "$2a$10$1Dr4YKPthO6JReNxKNd7AO27j9X14Zzwlo5WPSt7R2O7w1XpLw4he";
 
+        // Sayfa açılır açılmaz önceden giriş yapılmış mı diye kontrol et
+        window.onload = function() {
+            if(localStorage.getItem("squad_auth") === "true") {
+                document.getElementById("auth-overlay").style.display = "none";
+                fetchData();
+            }
+        };
+
         async function fetchData() {
             try {
                 const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, { headers: { "X-Master-Key": API_KEY } });
@@ -183,9 +191,12 @@
 
         function checkPassword() {
             if(document.getElementById("password-input").value === "o19yesmen") {
+                localStorage.setItem("squad_auth", "true");
                 document.getElementById("auth-overlay").style.display = "none";
                 fetchData();
-            } else alert("Yanlış parola!");
+            } else {
+                alert("Yanlış parola!");
+            }
         }
     </script>
 </body>
