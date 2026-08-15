@@ -291,6 +291,14 @@
 </head>
 <body>
 
+    <script>
+        let sifre = prompt("EKİP ŞİFRESİNİ GİRİN:");
+        if (sifre !== "o19yesmen") {
+            alert("Yanlış Şifre! Giriş Engellendi.");
+            window.location.href = "about:blank";
+        }
+    </script>
+
     <div class="wrapper">
         <header>
             <h1>SQUAD ARCADE</h1>
@@ -351,8 +359,8 @@
     <div class="ticker-wrap">
         <div class="ticker" id="ticker-text">
             <span>⚡ SQUAD ARCADE AKTİF!</span>
-            <span>🔥 STEAM / OYUN HAVUZU SENKRONİZE EDİLDİ</span>
-            <span>🎮 CS2 VE EA SPORTS FC HAZIRLIKLARI BAŞLADI</span>
+            <span>🔥 ŞİFRELİ GÜVENLİ ERİŞİM DEVREDE</span>
+            <span>🎮 İYİ OYUNLAR İYİ KLİPLER!</span>
         </div>
     </div>
 
@@ -412,7 +420,6 @@
                 
                 let embedHTML = `<div style="height:160px; background:#111; display:flex; align-items:center; justify-content:center; color:#ff0033; font-size:0.8rem;">Geçersiz Link</div>`;
                 
-                // YouTube linklerini otomatik gömme biçimine çevir
                 if (media.url.includes("youtube.com") || media.url.includes("youtu.be")) {
                     let videoId = "";
                     if (media.url.includes("youtu.be/")) {
@@ -424,7 +431,6 @@
                         embedHTML = `<iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
                     }
                 } 
-                // Streamable linklerini otomatik gömme biçimine çevir
                 else if (media.url.includes("streamable.com")) {
                     let code = media.url.split("streamable.com/")[1].split("?")[0];
                     if(code) {
@@ -446,7 +452,7 @@
             let gameNames = customGames.map(g => g.name).join(" ⚡ ");
             ticker.innerHTML = `
                 <span>⚡ EKİP AKTİF OYUNLAR: ${gameNames}</span>
-                <span>🔥 SQUAD ARCADE CLOUD / LİNK SİSTEMİ DEVREDE</span>
+                <span>🔥 ŞİFRELİ SQUAD ARCADE DEVREDE</span>
                 <span>🎮 İYİ OYUNLAR İYİ KLİPLER!</span>
             `;
         }
