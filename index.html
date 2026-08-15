@@ -26,6 +26,86 @@
             padding: 25px 15px 60px 15px;
         }
 
+        /* ŞİFRE EKRANI OVERLAY */
+        #auth-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 2, 10, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .auth-card {
+            background: rgba(20, 10, 35, 0.95);
+            border: 3px solid #ff007f;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 0 30px rgba(255, 0, 127, 0.5), inset 0 0 15px rgba(0, 240, 255, 0.3);
+        }
+
+        .auth-card h2 {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.85rem;
+            color: #ffe600;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px #ff007f;
+        }
+
+        .auth-card p {
+            font-size: 0.9rem;
+            color: #00f0ff;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .auth-input {
+            width: 100%;
+            background: #05020a;
+            border: 2px solid #00f0ff;
+            padding: 12px;
+            color: #fff;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.1rem;
+            border-radius: 4px;
+            outline: none;
+            text-align: center;
+            margin-bottom: 15px;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+        }
+
+        .auth-input:focus {
+            border-color: #ff007f;
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.5);
+        }
+
+        .auth-btn {
+            background: #7a00ff;
+            border: 2px solid #00f0ff;
+            color: #fff;
+            padding: 12px;
+            width: 100%;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.7rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .auth-btn:hover {
+            background: #ff007f;
+            border-color: #ffe600;
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.8);
+            transform: scale(1.02);
+        }
+
         .wrapper {
             max-width: 950px;
             margin: 0 auto;
@@ -291,13 +371,15 @@
 </head>
 <body>
 
-    <script>
-        let sifre = prompt("EKİP ŞİFRESİNİ GİRİN:");
-        if (sifre !== "o19yesmen") {
-            alert("Yanlış Şifre! Giriş Engellendi.");
-            window.location.href = "about:blank";
-        }
-    </script>
+    <!-- ÖZEL ŞİFRE GİRİŞ EKRANI -->
+    <div id="auth-overlay">
+        <div class="auth-card">
+            <h2>SQUAD KORUMA</h2>
+            <p>Parolayı bilirsen girersin yoksa giriş falan yok sana!</p>
+            <input type="password" id="password-input" class="auth-input" placeholder="Parola...">
+            <button class="auth-btn" onclick="checkPassword()">GİRİŞ YAP</button>
+        </div>
+    </div>
 
     <div class="wrapper">
         <header>
@@ -359,12 +441,30 @@
     <div class="ticker-wrap">
         <div class="ticker" id="ticker-text">
             <span>⚡ SQUAD ARCADE AKTİF!</span>
-            <span>🔥 ŞİFRELİ GÜVENLİ ERİŞİM DEVREDE</span>
+            <span>🔥 GÜVENLİ ERİŞİM KONTROL EDİLDİ</span>
             <span>🎮 İYİ OYUNLAR İYİ KLİPLER!</span>
         </div>
     </div>
 
     <script>
+        // Şifre Hatırlama Kontrolü
+        window.addEventListener("DOMContentLoaded", () => {
+            if (localStorage.getItem("squad_logged_in") === "true") {
+                document.getElementById("auth-overlay").style.display = "none";
+            }
+        });
+
+        function checkPassword() {
+            const val = document.getElementById("password-input").value;
+            if (val === "o19yesmen") {
+                localStorage.setItem("squad_logged_in", "true");
+                document.getElementById("auth-overlay").style.display = "none";
+            } else {
+                alert("Yanlış parola! Giriş yok.");
+                document.getElementById("password-input").value = "";
+            }
+        }
+
         let customGames = JSON.parse(localStorage.getItem("squad_custom_games")) || [
             { id: 1, name: "EA Sports FC", done: false },
             { id: 2, name: "Counter-Strike 2", done: false }
@@ -452,7 +552,7 @@
             let gameNames = customGames.map(g => g.name).join(" ⚡ ");
             ticker.innerHTML = `
                 <span>⚡ EKİP AKTİF OYUNLAR: ${gameNames}</span>
-                <span>🔥 ŞİFRELİ SQUAD ARCADE DEVREDE</span>
+                <span>🔥 ÖZEL KORUMALI SQUAD ARCADE</span>
                 <span>🎮 İYİ OYUNLAR İYİ KLİPLER!</span>
             `;
         }
