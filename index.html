@@ -18,6 +18,11 @@
         header { text-align: center; margin-bottom: 30px; border: 2px dashed #7a00ff; padding: 20px; background: rgba(10, 5, 20, 0.8); border-radius: 8px; }
         h1 { font-family: 'Press Start 2P', cursive; font-size: 1.5rem; color: #ff007f; text-shadow: 3px 3px #00f0ff; margin-bottom: 12px; }
         
+        .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin-bottom: 30px; }
+        .panel-box { background: rgba(20, 10, 35, 0.85); border: 2px solid #00f0ff; padding: 15px; border-radius: 6px; text-align: center; }
+        .panel-box h3 { font-family: 'Press Start 2P', cursive; font-size: 0.75rem; color: #ff007f; margin-bottom: 6px; }
+        .panel-box p { font-size: 0.9rem; color: #00ff66; }
+
         .section-header { font-family: 'Press Start 2P', cursive; font-size: 0.8rem; color: #ffe600; margin: 25px 0 12px 0; }
         .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
         .arcade-input { flex: 1; background: #05020a; border: 2px solid #7a00ff; padding: 12px; color: #00f0ff; font-family: 'Share Tech Mono', monospace; border-radius: 4px; }
@@ -25,6 +30,10 @@
         
         .game-item { background: rgba(15, 8, 25, 0.9); border: 2px solid #444; padding: 14px 18px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .game-item.completed { border-color: #00ff66; background: rgba(0, 255, 102, 0.08); color: #00ff66; text-decoration: line-through; }
+        
+        .media-card { background: rgba(15, 8, 25, 0.9); border: 2px solid #7a00ff; padding: 12px; border-radius: 6px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .media-card a { color: #00f0ff; text-decoration: none; word-break: break-all; }
+        .media-card a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -40,6 +49,14 @@
     <div class="wrapper">
         <header><h1>SQUAD ARCADE</h1></header>
 
+        <div class="section-header">// SQUAD ÜYELERİ</div>
+        <div class="grid-4">
+            <div class="panel-box"><h3>Xoran</h3><p>ONLINE / HOST</p></div>
+            <div class="panel-box"><h3>Linus Kek Tips</h3><p>ONLINE / O19</p></div>
+            <div class="panel-box"><h3>H19</h3><p>ONLINE</p></div>
+            <div class="panel-box"><h3>Ayeesha</h3><p>ONLINE</p></div>
+        </div>
+
         <div class="section-header">// OYUN HAVUZUNA EKLE</div>
         <div class="input-group">
             <input type="text" id="game-input" class="arcade-input" placeholder="Oyun adı...">
@@ -48,6 +65,14 @@
 
         <div class="section-header">// OYUN LİSTESİ</div>
         <div id="game-container"></div>
+
+        <div class="section-header">// KLİP / MEDYA EKLE</div>
+        <div class="input-group" style="flex-direction: column;">
+            <input type="text" id="media-title-input" class="arcade-input" placeholder="Medya Başlığı...">
+            <input type="text" id="media-url-input" class="arcade-input" placeholder="Link (YouTube / Streamable vb.)...">
+            <button class="arcade-btn" onclick="addMedia()" style="padding: 12px; width: 100%;">LİNKİ EKLE</button>
+        </div>
+        <div id="media-container" style="margin-top: 15px;"></div>
     </div>
 
     <script>
@@ -55,9 +80,11 @@
         const API_KEY = "$2a$10$1Dr4YKPthO6JReNxKNd7AO27j9X14Zzwlo5WPSt7R2O7w1XpLw4he";
 
         async function fetchData() {
-            const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, { headers: { "X-Master-Key": API_KEY } });
-            const json = await res.json();
-            render(json.record);
+            try {
+                const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, { headers: { "X-Master-Key": API_KEY } });
+                const json = await res.json();
+                render(json.record);
+            } catch(e) { console.error("Veri çekilemedi", e); }
         }
 
         async function updateData(newData) {
@@ -70,20 +97,42 @@
         }
 
         function render(data) {
-            const cont = document.getElementById("game-container");
-            cont.innerHTML = data.games.map(g => `
-                <div class="game-item ${g.done ? 'completed' : ''}">
-                    <span>${g.name}</span>
-                    <button class="arcade-btn" onclick="toggleDone(${g.id})">${g.done ? '✓' : 'TAMAMLA'}</button>
-                </div>
-            `).join('');
+            // Oyunlar
+            const gCont = document.getElementById("game-container");
+            if(data.games && data.games.length > 0) {
+                gCont.innerHTML = data.games.map(g => `
+                    <div class="game-item ${g.done ? 'completed' : ''}">
+                        <span>${g.name}</span>
+                        <button class="arcade-btn" onclick="toggleDone(${g.id})">${g.done ? '✓' : 'TAMAMLA'}</button>
+                    </div>
+                `).join('');
+            } else {
+                gCont.innerHTML = '<p style="color:#666;">Henüz oyun eklenmemiş.</p>';
+            }
+
+            // Medyalar
+            const mCont = document.getElementById("media-container");
+            if(data.media && data.media.length > 0) {
+                mCont.innerHTML = data.media.map(m => `
+                    <div class="media-card">
+                        <div>
+                            <strong style="color:#ff007f; display:block; margin-bottom:4px;">${m.title}</strong>
+                            <a href="${m.url}" target="_blank">${m.url}</a>
+                        </div>
+                        <button class="arcade-btn" onclick="deleteMedia(${m.id})" style="background:#ff0055; font-size:0.7rem; padding:8px;">SİL</button>
+                    </div>
+                `).join('');
+            } else {
+                mCont.innerHTML = '<p style="color:#666;">Henüz medya eklenmemiş.</p>';
+            }
         }
 
         async function addGame() {
             const input = document.getElementById("game-input");
-            if(!input.value) return;
+            if(!input.value.trim()) return;
             const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, { headers: { "X-Master-Key": API_KEY } });
             const json = await res.json();
+            if(!json.record.games) json.record.games = [];
             json.record.games.push({ id: Date.now(), name: input.value, done: false });
             updateData(json.record);
             input.value = "";
@@ -93,6 +142,26 @@
             const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, { headers: { "X-Master-Key": API_KEY } });
             const json = await res.json();
             json.record.games.forEach(g => { if(g.id === id) g.done = !g.done; });
+            updateData(json.record);
+        }
+
+        async function addMedia() {
+            const titleInput = document.getElementById("media-title-input");
+            const urlInput = document.getElementById("media-url-input");
+            if(!titleInput.value.trim() || !urlInput.value.trim()) return;
+            const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, { headers: { "X-Master-Key": API_KEY } });
+            const json = await res.json();
+            if(!json.record.media) json.record.media = [];
+            json.record.media.push({ id: Date.now(), title: titleInput.value, url: urlInput.value });
+            updateData(json.record);
+            titleInput.value = "";
+            urlInput.value = "";
+        }
+
+        async function deleteMedia(id) {
+            const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, { headers: { "X-Master-Key": API_KEY } });
+            const json = await res.json();
+            json.record.media = json.record.media.filter(m => m.id !== id);
             updateData(json.record);
         }
 
