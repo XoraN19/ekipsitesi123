@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQUAD ARCADE // 4P COMMAND</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0b0614;
+            color: #00f0ff;
+            font-family: 'Share Tech Mono', monospace;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 50% 20%, rgba(122, 0, 255, 0.15) 0%, transparent 50%),
+                linear-gradient(rgba(11, 6, 20, 0.9), rgba(11, 6, 20, 0.9)),
+                url('https://media.giphy.com/media/26tn33aiTi1jkl6H6/giphy.gif');
+            background-size: cover;
+            background-attachment: fixed;
+            padding: 25px 15px 60px 15px;
+        }
+
+        .wrapper {
+            max-width: 950px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border: 2px dashed #7a00ff;
+            padding: 20px;
+            background: rgba(10, 5, 20, 0.8);
+            box-shadow: 0 0 20px rgba(122, 0, 255, 0.4);
+            border-radius: 8px;
+        }
+
+        h1 {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.5rem;
+            color: #ff007f;
+            text-shadow: 3px 3px #00f0ff;
+            margin-bottom: 12px;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: #bbb;
+            letter-spacing: 1px;
+        }
+
+        /* ALT KAYAN HABERLER / OYUN ŞERİDİ */
+        .ticker-wrap {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #05020a;
+            border-top: 2px solid #ff007f;
+            overflow: hidden;
+            height: 35px;
+            line-height: 35px;
+            z-index: 999;
+            box-shadow: 0 -5px 15px rgba(255, 0, 127, 0.2);
+        }
+
+        .ticker {
+            display: inline-block;
+            white-space: nowrap;
+            animation: ticker 25s linear infinite;
+            font-size: 0.85rem;
+            color: #ffe600;
+        }
+
+        .ticker span {
+            margin-right: 40px;
+        }
+
+        @keyframes ticker {
+            0% { transform: translate3d(100%, 0, 0); }
+            100% { transform: translate3d(-100%, 0, 0); }
+        }
+
+        /* EKİP ÜYELERİ KUTULARI */
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .panel-box {
+            background: rgba(20, 10, 35, 0.85);
+            border: 2px solid #00f0ff;
+            padding: 15px;
+            border-radius: 6px;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+            text-align: center;
+        }
+
+        .panel-box h3 {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.7rem;
+            color: #ff007f;
+            margin-bottom: 8px;
+        }
+
+        .panel-box p {
+            font-size: 0.85rem;
+            color: #00ff66;
+        }
+
+        /* ORTAK ALANLAR */
+        .section-header {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.8rem;
+            color: #ffe600;
+            margin: 25px 0 12px 0;
+            text-shadow: 2px 2px rgba(255, 230, 0, 0.3);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .arcade-input {
+            flex: 1;
+            background: #05020a;
+            border: 2px solid #7a00ff;
+            padding: 12px;
+            color: #00f0ff;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1rem;
+            border-radius: 4px;
+            outline: none;
+            min-width: 200px;
+        }
+
+        .arcade-input:focus {
+            border-color: #ff007f;
+            box-shadow: 0 0 10px rgba(255, 0, 127, 0.4);
+        }
+
+        .arcade-btn {
+            background: #7a00ff;
+            border: 2px solid #00f0ff;
+            color: #fff;
+            padding: 0 20px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.6rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .arcade-btn:hover {
+            background: #ff007f;
+            border-color: #ffe600;
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.6);
+            transform: scale(1.05);
+        }
+
+        /* OYUN KARTLARI */
+        .game-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .game-item {
+            background: rgba(15, 8, 25, 0.9);
+            border: 2px solid #444;
+            padding: 14px 18px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .game-item.completed {
+            border-color: #00ff66;
+            background: rgba(0, 255, 102, 0.08);
+        }
+
+        .game-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .game-item.completed .game-title {
+            color: #00ff66;
+            text-decoration: line-through;
+        }
+
+        .game-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            background: transparent;
+            border: 1px solid #777;
+            color: #bbb;
+            padding: 6px 12px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .action-btn.done {
+            border-color: #00ff66;
+            color: #00ff66;
+            background: rgba(0, 255, 102, 0.15);
+        }
+
+        .action-btn.del {
+            border-color: #ff0033;
+            color: #ff0033;
+        }
+
+        /* VİDEO / LİNK GALERİSİ */
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .media-card {
+            background: rgba(15, 8, 25, 0.9);
+            border: 2px solid #7a00ff;
+            padding: 12px;
+            border-radius: 6px;
+            box-shadow: 0 0 10px rgba(122, 0, 255, 0.2);
+        }
+
+        .media-card iframe, .media-card video {
+            width: 100%;
+            height: 160px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            border: 1px solid #444;
+            background: #000;
+        }
+
+        .media-title {
+            font-size: 0.9rem;
+            color: #fff;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        /* RASTGELE SEÇİCİ */
+        .roulette-box {
+            margin-top: 35px;
+            margin-bottom: 40px;
+            background: rgba(25, 10, 40, 0.95);
+            border: 3px solid #ff007f;
+            padding: 25px;
+            text-align: center;
+            border-radius: 8px;
+            box-shadow: 0 0 25px rgba(255, 0, 127, 0.3);
+        }
+
+        .roulette-box h2 {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.8rem;
+            color: #ffe600;
+            margin-bottom: 15px;
+        }
+
+        #roulette-result {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1rem;
+            color: #00f0ff;
+            margin: 20px 0;
+            min-height: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+        <header>
+            <h1>SQUAD ARCADE</h1>
+            <div class="subtitle">> 4 Kişilik Komuta Merkezi & Klip Aracı</div>
+        </header>
+
+        <!-- EKİP ÜYELERİ KARTI -->
+        <div class="section-header">// SQUAD ÜYELERİ</div>
+        <div class="grid-4">
+            <div class="panel-box">
+                <h3>Xoran</h3>
+                <p>ONLINE / HOST</p>
+            </div>
+            <div class="panel-box">
+                <h3>Linus Kek Tips</h3>
+                <p>ONLINE / O19</p>
+            </div>
+            <div class="panel-box">
+                <h3>H19</h3>
+                <p>ONLINE</p>
+            </div>
+            <div class="panel-box">
+                <h3>Ayeesha</h3>
+                <p>ONLINE</p>
+            </div>
+        </div>
+
+        <!-- OYUN EKLEME FORMU -->
+        <div class="section-header">// OYUN HAVUZUNA EKLE</div>
+        <div class="input-group">
+            <input type="text" id="game-input" class="arcade-input" placeholder="Oyun adı yazın (Örn: CS2, Phasmophobia...)">
+            <button class="arcade-btn" onclick="addGame()">EKLE</button>
+        </div>
+
+        <!-- OYUNLARIN LİSTESİ -->
+        <div class="section-header">// OYUN LİSTESİ & DURUMU</div>
+        <div class="game-list" id="game-container"></div>
+
+        <!-- YOUTUBE / STREAMABLE KLİP EKLEME ALANI -->
+        <div class="section-header">// KLİP EKLE (YOUTUBE / STREAMABLE LİNKİ)</div>
+        <div class="input-group">
+            <input type="text" id="media-title-input" class="arcade-input" placeholder="Klip Başlığı (Örn: CS2 Ace Vuruşu)">
+            <input type="text" id="media-url-input" class="arcade-input" placeholder="Video Linkini Yapıştır (YouTube veya Streamable)">
+            <button class="arcade-btn" onclick="addMediaLink()">LİNKİ EKLE</button>
+        </div>
+        <div class="media-grid" id="media-container"></div>
+
+        <!-- RASTGELE SEÇİCİ -->
+        <div class="roulette-box">
+            <h2>🎲 NE OYNAYACAĞIZ? (RADAR)</h2>
+            <p style="font-size: 0.85rem; color: #aaa;">Eklediğiniz oyunlar arasından rastgele seçim yapın!</p>
+            <div id="roulette-result">RADAR BEKLİYOR...</div>
+            <button class="arcade-btn" style="padding: 12px 25px; font-size: 0.7rem;" onclick="spinRoulette()">SEÇİMİ BAŞLAT</button>
+        </div>
+    </div>
+
+    <!-- ALT KAYAN BİLGİ / OYUN ŞERİDİ -->
+    <div class="ticker-wrap">
+        <div class="ticker" id="ticker-text">
+            <span>⚡ SQUAD ARCADE AKTİF!</span>
+            <span>🔥 STEAM / OYUN HAVUZU SENKRONİZE EDİLDİ</span>
+            <span>🎮 CS2 VE EA SPORTS FC HAZIRLIKLARI BAŞLADI</span>
+        </div>
+    </div>
+
+    <script>
+        let customGames = JSON.parse(localStorage.getItem("squad_custom_games")) || [
+            { id: 1, name: "EA Sports FC", done: false },
+            { id: 2, name: "Counter-Strike 2", done: false }
+        ];
+
+        let customMedia = JSON.parse(localStorage.getItem("squad_custom_media")) || [];
+
+        function saveAndRender() {
+            localStorage.setItem("squad_custom_games", JSON.stringify(customGames));
+            localStorage.setItem("squad_custom_media", JSON.stringify(customMedia));
+            renderGames();
+            renderMedia();
+            updateTicker();
+        }
+
+        function renderGames() {
+            const container = document.getElementById("game-container");
+            container.innerHTML = "";
+
+            if (customGames.length === 0) {
+                container.innerHTML = `<div style="color: #777; padding: 10px; font-size: 0.85rem;">Henüz oyun eklenmedi.</div>`;
+                return;
+            }
+
+            customGames.forEach(game => {
+                const item = document.createElement("div");
+                item.className = `game-item ${game.done ? 'completed' : ''}`;
+                item.innerHTML = `
+                    <span class="game-title">${game.name}</span>
+                    <div class="game-actions">
+                        <button class="action-btn ${game.done ? 'done' : ''}" onclick="toggleDone(${game.id})">
+                            ${game.done ? '✓ OYNANDI' : 'İŞARETLE'}
+                        </button>
+                        <button class="action-btn del" onclick="deleteGame(${game.id})">SİL</button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function renderMedia() {
+            const container = document.getElementById("media-container");
+            container.innerHTML = "";
+
+            if (customMedia.length === 0) {
+                container.innerHTML = `<div style="color: #777; font-size: 0.85rem; grid-column: 1/-1;">Henüz klip eklenmedi.</div>`;
+                return;
+            }
+
+            customMedia.forEach(media => {
+                const card = document.createElement("div");
+                card.className = "media-card";
+                
+                let embedHTML = `<div style="height:160px; background:#111; display:flex; align-items:center; justify-content:center; color:#ff0033; font-size:0.8rem;">Geçersiz Link</div>`;
+                
+                // YouTube linklerini otomatik gömme biçimine çevir
+                if (media.url.includes("youtube.com") || media.url.includes("youtu.be")) {
+                    let videoId = "";
+                    if (media.url.includes("youtu.be/")) {
+                        videoId = media.url.split("youtu.be/")[1].split("?")[0];
+                    } else if (media.url.includes("watch?v=")) {
+                        videoId = media.url.split("watch?v=")[1].split("&")[0];
+                    }
+                    if(videoId) {
+                        embedHTML = `<iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
+                    }
+                } 
+                // Streamable linklerini otomatik gömme biçimine çevir
+                else if (media.url.includes("streamable.com")) {
+                    let code = media.url.split("streamable.com/")[1].split("?")[0];
+                    if(code) {
+                        embedHTML = `<iframe src="https://streamable.com/e/${code}" frameborder="0" allowfullscreen></iframe>`;
+                    }
+                }
+
+                card.innerHTML = `
+                    ${embedHTML}
+                    <div class="media-title">${media.title}</div>
+                    <button class="action-btn del" style="width:100%; font-size:0.7rem;" onclick="deleteMedia(${media.id})">KLİBİ SİL</button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function updateTicker() {
+            const ticker = document.getElementById("ticker-text");
+            let gameNames = customGames.map(g => g.name).join(" ⚡ ");
+            ticker.innerHTML = `
+                <span>⚡ EKİP AKTİF OYUNLAR: ${gameNames}</span>
+                <span>🔥 SQUAD ARCADE CLOUD / LİNK SİSTEMİ DEVREDE</span>
+                <span>🎮 İYİ OYUNLAR İYİ KLİPLER!</span>
+            `;
+        }
+
+        function addGame() {
+            const input = document.getElementById("game-input");
+            const val = input.value.trim();
+            if(!val) return;
+
+            customGames.push({ id: Date.now(), name: val, done: false });
+            input.value = "";
+            saveAndRender();
+        }
+
+        function toggleDone(id) {
+            customGames = customGames.map(g => {
+                if(g.id === id) g.done = !g.done;
+                return g;
+            });
+            saveAndRender();
+        }
+
+        function deleteGame(id) {
+            customGames = customGames.filter(g => g.id !== id);
+            saveAndRender();
+        }
+
+        function addMediaLink() {
+            const titleInput = document.getElementById("media-title-input");
+            const urlInput = document.getElementById("media-url-input");
+            const title = titleInput.value.trim();
+            const url = urlInput.value.trim();
+
+            if(!title || !url) {
+                alert("Lütfen hem başlık hem de video linki yazın!");
+                return;
+            }
+
+            customMedia.push({ id: Date.now(), title, url });
+            titleInput.value = "";
+            urlInput.value = "";
+            saveAndRender();
+        }
+
+        function deleteMedia(id) {
+            customMedia = customMedia.filter(m => m.id !== id);
+            saveAndRender();
+        }
+
+        function spinRoulette() {
+            const resultBox = document.getElementById("roulette-result");
+            if(customGames.length === 0) {
+                resultBox.innerHTML = "ÖNCE OYUN EKLE!";
+                return;
+            }
+
+            resultBox.innerHTML = "TARANIYOR...";
+            let counter = 0;
+            
+            let interval = setInterval(() => {
+                let randomG = customGames[Math.floor(Math.random() * customGames.length)];
+                resultBox.innerHTML = randomG.name;
+                counter++;
+                if(counter > 10) {
+                    clearInterval(interval);
+                    let finalG = customGames[Math.floor(Math.random() * customGames.length)];
+                    resultBox.innerHTML = `🎯 SEÇİLDİ: ${finalG.name}`;
+                }
+            }, 100);
+        }
+
+        window.onload = function() {
+            saveAndRender();
+        };
+    </script>
+</body>
+</html>
